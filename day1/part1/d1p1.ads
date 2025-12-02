@@ -20,9 +20,11 @@ is
    procedure Dump  (R : in InputT);
 
    function Combination (R : InputT) return Natural
-     with Global => null;
+     with Global => null,
+          Post   => Combination'Result <= Entries;
 
    function Combination2 (R : InputT) return Natural
-     with Global => null;
+     with Global => null,
+          Post   => Combination2'Result <= Entries;
 
 end D1P1;
