@@ -1,0 +1,32 @@
+project D1P1 is
+
+   for Source_Dirs use (".");
+   for Object_Dir use ".";
+   for Create_Missing_Dirs use "True";
+
+   package Compiler is
+      for Default_Switches ("Ada") use
+        ("-gnaty", "-gnatVa", "-gnata", "-O1");
+
+
+   end Compiler;
+
+   package Binder is
+      for Switches ("Ada") use ("-Es"); --  Symbolic traceback
+   end Binder;
+
+   package Prove is
+      for Proof_Switches ("Ada") use ("--proof=per_path",
+                                      "-j8",
+                                      "--no-global-generation",
+                                      "--no-inlining",
+                                      "--no-loop-unrolling",
+                                      "--level=1",
+                                      "--prover=z3,cvc5,altergo",
+                                      "--timeout=4",
+                                      "--memlimit=0",
+                                      "--steps=25000",
+                                      "--report=statistics");
+   end Prove;
+
+end D1P1;
