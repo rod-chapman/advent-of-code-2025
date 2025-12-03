@@ -2,6 +2,8 @@ with Ada.Text_IO; use Ada.Text_IO;
 package body D1P1
   with SPARK_Mode => On
 is
+   Q : constant := 100;
+
    function Get_Input (Filename : in String) return InputT
      with SPARK_Mode => Off
    is
@@ -36,7 +38,6 @@ is
 
    function Combination (R : InputT) return Natural
    is
-      Q : constant := 100;
       subtype Dial_Range is I32 range 0 .. Q - 1;
       Combo : Natural := 0;
       Dial : Dial_Range := 50;
@@ -53,7 +54,6 @@ is
    --  new input.
    function Combination2 (R : InputT) return Natural
    is
-      Q : constant := 100;
       subtype Dial_Range is U32 range 0 .. Q - 1;
       Combo : Natural := 0;
       Dial : Dial_Range := 50;
@@ -67,5 +67,41 @@ is
       end loop;
       return Combo;
    end Combination2;
+
+   --  Faster again - 4-way manual loop unroll to exploit potential
+   --  super-scalar CPU
+   function Combination3 (R : InputT) return Natural
+   is
+      pragma Assert (Entries mod 4 = 0);
+
+      subtype Dial_Range is U32 range 0 .. Q - 1;
+
+      Combo : Natural := 0;
+      Dial : Dial_Range := 50;
+      ND1, ND2, ND3, ND4 : U32;
+      D1, D2, D3 : Dial_Range;
+   begin
+      for I in Input_Index range 0 .. (Entries / 4) - 1 loop
+         pragma Loop_Invariant (Combo <= I * 4);
+         declare
+            Offset : constant Input_Index := I * 4;
+         begin
+            ND1 := Dial + U32 (R (Offset) + 1000);
+            ND2 := ND1 + U32 (R (Offset + 1) + 1000);
+            ND3 := ND2 + U32 (R (Offset + 2) + 1000);
+            ND4 := ND3 + U32 (R (Offset + 3) + 1000);
+         end;
+         D1 := ND1 rem Q;
+         D2 := ND2 rem Q;
+         D3 := ND3 rem Q;
+         Dial := ND4 rem Q;
+         Combo := Combo + Boolean'Pos (D1 = 0) +
+                          Boolean'Pos (D2 = 0) +
+                          Boolean'Pos (D3 = 0) +
+                          Boolean'Pos (Dial = 0);
+      end loop;
+      return Combo;
+   end Combination3;
+
 
 end D1P1;

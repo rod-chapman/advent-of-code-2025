@@ -27,4 +27,8 @@ is
      with Global => null,
           Post   => Combination2'Result <= Entries;
 
+   function Combination3 (R : InputT) return Natural
+     with Global => null,
+          Post   => Combination3'Result <= Entries;
+
 end D1P1;

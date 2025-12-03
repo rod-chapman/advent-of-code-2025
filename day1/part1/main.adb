@@ -6,18 +6,21 @@ is
    R : InputT;
    C : Natural;
    T1, T2 : Time;
-   D : Duration;
+   Total : Duration;
 begin
    R := Get_Input ("input.txt");
    Dump (R);
 
    Put_Line ("Going to compute combination");
-   T1 := Clock;
-   C := Combination2 (R);
-   T2 := Clock;
+   Total := 0.0;
+   for I in 1 .. 1000 loop
+      T1 := Clock;
+      C := Combination3 (R);
+      T2 := Clock;
+      Total := Total + To_Duration (T2 - T1);
+   end loop;
 
-   D := To_Duration (T2 - T1);
    Put_Line (C'Img);
-   Put_Line (D'Img);
+   Put_Line (Total'Img);
 
 end Main;
